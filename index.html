@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Random String Generator</title>
+  <script>
+    function generateRandomString() {
+      var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      var length = 12;
+      var randomString = '';
+
+      for (var i = 0; i < length; i++) {
+        var randomIndex = Math.floor(Math.random() * chars.length);
+        randomString += chars.charAt(randomIndex);
+      }
+
+      var fileContent = btoa(randomString); // Convert the string to base64
+
+      var username = 'STRAXXYHUBBZ';
+      var repository = 'aurakey';
+      var filepath = 'file.txt';
+      var accessToken = 'YourGitHubAccessToken';
+
+      var apiUrl = 'https://api.github.com/repos/' + username + '/' + repository + '/contents/' + filepath;
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', apiUrl, true);
+      xhr.setRequestHeader('Authorization', 'token ' + accessToken);
+      xhr.onload = function() {
+        if (xhr.status === 200) {
+          var fileData = JSON.parse(xhr.responseText);
+          var sha = fileData.sha;
+
+          var updateData = {
+            message: 'Add random string',
+            content: fileContent,
+            sha: sha
+          };
+
+          xhr.open('PUT', apiUrl, true);
+          xhr.setRequestHeader('Authorization', 'token ' + accessToken);
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.onload = function() {
+            if (xhr.status === 200) {
+              alert('Random string added to the file successfully!');
+            } else {
+              alert('Failed to add random string to the file.');
+            }
+          };
+          xhr.send(JSON.stringify(updateData));
+        } else {
+          alert('Failed to get file information.');
+        }
+      };
+      xhr.send();
+    }
+  </script>
+</head>
+<body>
+  <h1>Random String Generator</h1>
+  <button onclick="generateRandomString()">Generate String</button>
+</body>
+</html>
