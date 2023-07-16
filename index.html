@@ -1,62 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Random String Generator</title>
-  <script>
-    function generateRandomString() {
-      var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      var length = 12;
-      var randomString = '';
-
-      for (var i = 0; i < length; i++) {
-        var randomIndex = Math.floor(Math.random() * chars.length);
-        randomString += chars.charAt(randomIndex);
-      }
-
-      var fileContent = btoa(randomString); // Convert the string to base64
-
-      var username = 'STRAXXYHUBBZ';
-      var repository = 'aurakey';
-      var filepath = 'file.txt';
-      var accessToken = 'fa67f1b610e8c5090c66ddb8f12975685e22ef35';
-
-      var apiUrl = 'https://api.github.com/repos/' + username + '/' + repository + '/contents/' + filepath;
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', apiUrl, true);
-      xhr.setRequestHeader('Authorization', 'token ' + accessToken);
-      xhr.onload = function() {
-        if (xhr.status === 200) {
-          var fileData = JSON.parse(xhr.responseText);
-          var sha = fileData.sha;
-
-          var updateData = {
-            message: 'Add random string',
-            content: fileContent,
-            sha: sha
-          };
-
-          xhr.open('PUT', apiUrl, true);
-          xhr.setRequestHeader('Authorization', 'token ' + accessToken);
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.onload = function() {
-            if (xhr.status === 200) {
-              alert('Random string added to the file successfully!');
-            } else {
-              alert('Failed to add random string to the file.');
-            }
-          };
-          xhr.send(JSON.stringify(updateData));
-        } else {
-          alert('Failed to get file information.');
-        }
-      };
-      xhr.send();
-    }
-  </script>
+  <title>Aura Key Generator</title>
 </head>
 <body>
-  <h1>Random String Generator</h1>
-  <button onclick="generateRandomString()">Generate String</button>
+  <button id="generateButton">Generate Key</button>
+
+  <script>
+    function generateKey() {
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const length = 6;
+      let key = 'aura-';
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        key += characters.charAt(randomIndex);
+      }
+
+      return key;
+    }
+
+    document.getElementById('generateButton').addEventListener('click', function() {
+      const generatedKey = generateKey();
+      alert('Generated Key: ' + generatedKey);
+
+      const fileContent = generatedKey;
+      const filename = 'file.txt';
+      const githubRepoUrl = 'https://api.github.com/repos/STRAXXYHUBBZ/aurakey/contents/' + filename;
+      const authToken = 'fa67f1b610e8c5090c66ddb8f12975685e22ef35';
+
+      const request = new XMLHttpRequest();
+      request.open('PUT', githubRepoUrl);
+      request.setRequestHeader('Authorization', 'token ' + authToken);
+      request.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+      request.onload = function() {
+        if (request.status === 201) {
+          alert('File uploaded successfully!');
+        } else {
+          alert('An error occurred while uploading the file. Please try again.');
+        }
+      };
+
+      const fileData = {
+        message: 'Upload file',
+        content: btoa(fileContent)
+      };
+
+      request.send(JSON.stringify(fileData));
+    });
+  </script>
 </body>
 </html>
